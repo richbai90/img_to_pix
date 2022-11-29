@@ -1,2 +1,6 @@
 # img_to_pix
-Extract pixel values from an image file
+Simple command line utility to extract pixel values from an image file
+
+## Usage
+img_to_pixel <path/to/image> <path/to/output.dat>
+
