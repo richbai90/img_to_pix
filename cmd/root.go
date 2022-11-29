@@ -29,11 +29,25 @@ var rootCmd = &cobra.Command{
 		}
 
 		for i, b := range bytes {
-			if (i + 1) % 4 == 0 {
+			if (i+1)%4 == 0 {
 				fmt.Fprintln(f)
 				continue
-			}  
-			fmt.Fprintf(f, "%x", b)
+			}
+			fmt.Fprintf(f, "%02X", b)
+		}
+		if rpt, _ := cmd.Flags().GetString("report"); rpt != "" {
+			r, err := os.Create(rpt)
+			if err != nil {
+				log.Fatal("Could not create report ", rpt, "\nError: ", err.Error())
+			}
+
+			fmt.Fprintf(r, `Filename: %s
+Dimensions: %dx%d
+Total Pixels: %d
+Pixels Per Row: %d
+bytes: %d
+Bytes Per Row: %d`,
+				args[0], img.Bounds().Dx(), img.Bounds().Dy(), len(bytes)/4, len(bytes)/4/img.Bounds().Dy(), len(bytes)/4*3, (len(bytes)/4*3)/img.Bounds().Dy())
 		}
 
 		defer f.Close()
@@ -55,7 +69,7 @@ func init() {
 	// will be global for your application.
 
 	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.img_to_pix.yaml)")
-
+	rootCmd.Flags().StringP("report", "r", "", "Generate a report with information about the image file and format including dimensions")
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 }
